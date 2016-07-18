@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     SupportMapFragment sMapFragment;
-    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +142,7 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap){
         Toast.makeText(getApplication(),"PokeMap v1.0. JBJ Corp.",Toast.LENGTH_SHORT).show();
 
+        GoogleMap mMap;
         mMap = googleMap;
 
         // Map UI setting
