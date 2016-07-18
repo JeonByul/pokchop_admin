@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity
             fm.beginTransaction().replace(R.id.content_frame, new ImportFragment()).commit();
             // Handle the camera action
         } else if (id == R.id.nav_slideshow) {
+            fm.beginTransaction().replace(R.id.content_frame, new FreeBoard()).commit();
 
         } else if (id == R.id.nav_manage) {
 
