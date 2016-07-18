@@ -21,14 +21,16 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener {
 
     SupportMapFragment sMapFragment;
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,8 +116,11 @@ public class MainActivity extends AppCompatActivity
 
 
         if (id == R.id.nav_gallery) {
-            if(!sMapFragment.isAdded())
+            if(!sMapFragment.isAdded()) {
                 sFm.beginTransaction().add(R.id.map, sMapFragment).commit();
+
+            }
+
             else
                 sFm.beginTransaction().show(sMapFragment).commit();
 
@@ -143,11 +148,11 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap){
         Toast.makeText(getApplication(),"PokeMap v1.0. JBJ Corp.",Toast.LENGTH_SHORT).show();
 
-        GoogleMap mMap;
         mMap = googleMap;
 
         // Map UI setting
         mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.setOnMapLongClickListener(this);
 
         // Add a marker in Sydney and move the camera
         LatLng sokcho = new LatLng(38.206983, 128.591848);
@@ -164,5 +169,11 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getApplication(),"현재 위치를 확인할 수 없습니다.",Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    @Override
+    public void onMapLongClick(LatLng point) {
+        Toast.makeText(getApplication(),point.toString(),Toast.LENGTH_SHORT).show();
+        mMap.addMarker(new MarkerOptions().position(point).title("요기는~~").snippet("호쉐호쉐 출몰지역"));
     }
 }

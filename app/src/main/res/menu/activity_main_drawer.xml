@@ -8,16 +8,16 @@
             android:title="포키맵" />
         <item
             android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="포켓몬Go 공략" />
+            android:icon="@drawable/ic_menu_send"
+            android:title="포켓몬 잡으러 갈 사람~" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="자유게시판" />
+            android:icon="@android:drawable/star_big_on"
+            android:title="포켓몬 Go 공략" />
         <item
             android:id="@+id/nav_manage"
-            android:icon="@mipmap/ic_school"
-            android:title="모임찾기" />
+            android:icon="@android:drawable/sym_action_chat"
+            android:title="자유게시판" />
     </group>
 
     <item android:title="나의 메뉴">
@@ -28,8 +28,8 @@
                 android:title="페이스북에 공유하기" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="내 목록" />
+                android:icon="@android:drawable/stat_notify_chat"
+                android:title="내 글 목록" />
         </menu>
     </item>
 
