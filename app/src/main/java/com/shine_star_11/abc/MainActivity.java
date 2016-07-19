@@ -1,12 +1,15 @@
 package com.shine_star_11.abc;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,13 +28,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener, GoogleMap.OnMapClickListener {
 
     SupportMapFragment sMapFragment;
     private GoogleMap mMap;
+    LinearLayout llBottomSheet;
+    List<ClipData.Item> items;
+
+    FloatingActionButton fabButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +54,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
+        //fabButton = (FloatingActionButton) findViewById(R.id.fab);
+
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
+        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fabButton.setOnClickListener(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -147,12 +158,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap){
         Toast.makeText(getApplication(),"PokeMap v1.0. JBJ Corp.",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplication(),"화면을 길게 눌러서 포켓몬을 추가해주세요~!",Toast.LENGTH_LONG).show();
 
         mMap = googleMap;
 
         // Map UI setting
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.setOnMapLongClickListener(this);
+        mMap.setOnMapClickListener(this);
 
         // Add a marker in Sydney and move the camera
         LatLng sokcho = new LatLng(38.206983, 128.591848);
@@ -174,6 +187,27 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapLongClick(LatLng point) {
         Toast.makeText(getApplication(),point.toString(),Toast.LENGTH_SHORT).show();
-        mMap.addMarker(new MarkerOptions().position(point).title("요기는~~").snippet("호쉐호쉐 출몰지역"));
+        Marker marker = mMap.addMarker(new MarkerOptions().position(point).title("요기는~~").snippet("호쉐호쉐 출몰지역"));
+
+        llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
+        behavior.setPeekHeight((int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 72.f, getResources().getDisplayMetrics()));
+        behavior.setHideable(true);
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    /*public void onClick(View view) {
+        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+    }*/
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
+        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+
     }
 }
