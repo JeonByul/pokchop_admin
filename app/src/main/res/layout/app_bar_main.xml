@@ -32,7 +32,7 @@
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        app:behavior_peekHeight="72dp"
+        app:behavior_peekHeight="232dp"
         app:behavior_hideable="true"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
@@ -43,20 +43,49 @@
             android:gravity="center_vertical"
             android:lines="1"
             android:maxLines="1"
-            android:text="ipsum_short"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="포켓몬 추가하기"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
 
-        <RatingBar
-            style="?android:attr/ratingBarStyleSmall"
+        <EditText
+            android:id="@+id/pokemon_name"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="포켓몬 이름"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
+
+        <ImageView
+            android:id="@+id/pokemon_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:rating="3.5" />
+            android:layout_weight="1"/>
 
-        <TextView
+        <EditText
+            android:id="@+id/pokemon_content"
             android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:hint="글 입력"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"/>
+
+        <Button
+            android:id="@+id/pokemon_picupload"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ipsum_long" />
+            android:layout_gravity="center"
+            android:layout_weight="0"
+            android:onClick="loadImagefromGallery"
+            android:text="사진 추가" />
+
+        <Button
+            android:id="@+id/pokemon_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0"
+            android:text="포켓몬 추가" />
 
     </LinearLayout>
 
