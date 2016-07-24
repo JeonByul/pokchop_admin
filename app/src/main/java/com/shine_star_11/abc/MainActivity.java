@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     SupportMapFragment sMapFragment;
     private GoogleMap mMap;
     LinearLayout llBottomSheet;
+    Marker marker;
     List<ClipData.Item> items;
 
     FloatingActionButton fabButton;
@@ -222,7 +223,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapLongClick(LatLng point) {
         Toast.makeText(getApplication(),point.toString(),Toast.LENGTH_SHORT).show();
-        Marker marker = mMap.addMarker(new MarkerOptions().position(point).title("요기는~~").snippet("호쉐호쉐 출몰지역"));
+        if(marker != null)
+            marker.remove();
+
+        marker = mMap.addMarker(new MarkerOptions().position(point).title("요기는~~").snippet("호쉐호쉐 출몰지역"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
         llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
         BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
@@ -243,7 +248,8 @@ public class MainActivity extends AppCompatActivity
         BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-
+        if(marker != null)
+            marker.remove();
     }
 
     // Image upload funciton
