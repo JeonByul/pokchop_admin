@@ -26,8 +26,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,6 +42,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener, GoogleMap.OnMapClickListener {
 
@@ -48,6 +54,9 @@ public class MainActivity extends AppCompatActivity
     List<ClipData.Item> items;
 
     FloatingActionButton fabButton;
+
+    AdRequest adRequest = new AdRequest.Builder().build();
+    AdView mAdView;
 
     //img upload var
     private static int RESULT_LOAD_IMG = 1;
@@ -59,7 +68,6 @@ public class MainActivity extends AppCompatActivity
 
         sMapFragment = SupportMapFragment.newInstance();
 
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -70,8 +78,23 @@ public class MainActivity extends AppCompatActivity
         BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
+        // floatingactionbutton implementing on map
+
         //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //fabButton.setOnClickListener(this);
+
+        // google adMob adview implementing
+
+        //mAdView = new AdView(this);
+        mAdView = (AdView) findViewById(R.id.adView);
+        //mAdView.setAdSize(AdSize.SMART_BANNER);
+        //mAdView.setAdUnitId("ca-app-pub-9488666633576327/5185503697");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        //RelativeLayout layout = (RelativeLayout)findViewById(R.id.ad_test);
+        //layout.addView(mAdView);
+        //AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+        //mAdView.loadAd(adRequestBuilder.build());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -145,6 +168,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_camera) {
             fm.beginTransaction().replace(R.id.content_frame, new ImportFragment()).commit();
+
             // Handle the camera action
         } else if (id == R.id.nav_slideshow) {
             fm.beginTransaction().replace(R.id.content_frame, new FreeBoard()).commit();
@@ -159,6 +183,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
