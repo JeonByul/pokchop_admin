@@ -29,10 +29,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -46,6 +49,10 @@ import java.util.List;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import com.shine_star_11.abc.SignInActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener, GoogleMap.OnMapClickListener {
@@ -58,8 +65,19 @@ public class MainActivity extends AppCompatActivity
 
     FloatingActionButton fabButton;
 
+    // Admob instance variables
     AdRequest adRequest = new AdRequest.Builder().build();
     AdView mAdView;
+
+    // Firebase instance variables
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
+    private FirebaseUser CurrentUser;
+    private String mUsername;
+    private String mUseremail;
+    private String mPhotoUrl;
+    public static final String ANONYMOUS = "anonymous";
+    private GoogleApiClient mGoogleApiClient;
 
     //img upload var
     private static int RESULT_LOAD_IMG = 1;
@@ -68,6 +86,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        CurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         sMapFragment = SupportMapFragment.newInstance();
 
@@ -101,7 +122,24 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                TextView userinfo_name = (TextView) findViewById(R.id.drawer_user_name);
+                TextView userinfo_email = (TextView) findViewById(R.id.drawer_user_email);
+                String name = CurrentUser.getDisplayName().toString();
+                String email = CurrentUser.getEmail().toString();
+                Uri photoUrl = CurrentUser.getPhotoUrl();
+                userinfo_name.setText(name);
+                userinfo_email.setText(email);
+            }
+        };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -114,7 +152,26 @@ public class MainActivity extends AppCompatActivity
         fm.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
 
         sMapFragment.getMapAsync(this);
+
+        // Initialize Firebase Auth, Sign in method for unauthenticated User
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+
+        if (mFirebaseUser == null) {
+            // Not signed in, launch the Sign In activity
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+            return;
+        } else {
+            mUsername = mFirebaseUser.getDisplayName();
+            if (mFirebaseUser.getPhotoUrl() != null) {
+                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+            }
+        }
+
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -145,7 +202,18 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.sign_out_menu:
+                mFirebaseAuth.signOut();
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                mUsername = ANONYMOUS;
+                startActivity(new Intent(this, SignInActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        //return super.onOptionsItemSelected(item);
     }
 
     // Navigation drawer fragment selecting function
