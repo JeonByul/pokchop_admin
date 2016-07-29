@@ -12,7 +12,7 @@
             android:id="@+id/timeline_userprofpic"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:background="#fff"/>
+            android:background="#ffffff"/>
         <TextView
             android:id="@+id/timeline_useremail"
             android:layout_width="wrap_content"
