@@ -277,7 +277,6 @@ public class MainActivity extends AppCompatActivity
         LatLng sokcho = new LatLng(38.206983, 128.591848);
         LatLng pusan = new LatLng(35.179773,129.075005);
         mMap.addMarker(new MarkerOptions().position(sokcho).title("여기는 속초마을~").snippet("놀러오세요~~"));
-        mMap.addMarker(new MarkerOptions().position(pusan).title("여기는 부산씨티!").snippet("놀러오이소~~"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sokcho));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(14));
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
