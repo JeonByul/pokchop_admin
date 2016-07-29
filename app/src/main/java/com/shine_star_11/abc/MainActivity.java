@@ -16,6 +16,8 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -55,6 +57,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +78,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.UploadTask;
 import com.shine_star_11.abc.SignInActivity;
+import com.shine_star_11.abc.model.postitem;
 import com.shine_star_11.abc.pokemonPost;
+import com.shine_star_11.abc.viewHolder.PostAdapter;
 
 import static android.view.View.*;
 
@@ -121,6 +126,9 @@ public class MainActivity extends AppCompatActivity
      */
     private GoogleApiClient client;
 
+    //postitem
+    ArrayList<postitem> listItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +141,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        listItem = new ArrayList<>();
+        RecyclerView rvList = (RecyclerView) findViewById(R.id.rv_list);
+
+        PostAdapter adapter = new PostAdapter(this, listItem);
+        rvList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rvList.setAdapter(adapter);
 
         llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
         //fabButton = (FloatingActionButton) findViewById(R.id.fab);
@@ -331,6 +346,8 @@ public class MainActivity extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 pokemonPost mapinfo = dataSnapshot.getValue(pokemonPost.class);
                 if (mapinfo.pokenumber != 0) {
+                    postitem item = new postitem(mapinfo.created_at,mapinfo.enlat, mapinfo.enlng, (int) mapinfo.pokenumber,mapinfo.username,mapinfo.profile_img,mapinfo.comment);
+                    listItem.add(item);
                     mMap.addMarker(new MarkerOptions().position(new LatLng(mapinfo.enlat, mapinfo.enlng))
                             .title(textArr[(int) mapinfo.pokenumber])
                             .snippet(mapinfo.comment + "  by." + mapinfo.username)
