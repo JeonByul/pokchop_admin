@@ -2,6 +2,7 @@ package com.shine_star_11.abc;
 
 import android.Manifest;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,6 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,8 +59,12 @@ import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.shine_star_11.abc.SignInActivity;
 import com.shine_star_11.abc.pokemonPost;
 
@@ -91,9 +97,7 @@ public class MainActivity extends AppCompatActivity
 
     // Firebase db instaces
     private DatabaseReference mDatabase;
-    private long spinner_pos;
-    private LatLng pos;
-    private Button add;
+    private Button enroll;
 
     // pokemon list
     String[] textArr = {"#001.Bulbasaur","#002.Ivysaur","#003.Venusaur","#004.Charmander","#005,Charmeleon","#006.Charizard",
@@ -298,6 +302,35 @@ public class MainActivity extends AppCompatActivity
             // Show rationale and request permission.
             Toast.makeText(getApplication(),"현재 위치를 확인할 수 없습니다.",Toast.LENGTH_SHORT).show();
         }
+        final Query pokemonlist = mDatabase.child("pokemonPosts");
+
+        pokemonlist.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                pokemonPost mapinfo = dataSnapshot.getValue(pokemonPost.class);
+                mMap.addMarker(new MarkerOptions().position(new LatLng(mapinfo.enlat,mapinfo.enlng)).title(textArr[(int) mapinfo.pokenumber]).snippet(mapinfo.comment));
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -326,13 +359,14 @@ public class MainActivity extends AppCompatActivity
         final String enname = CurrentUser.getDisplayName().toString();
         final String enemail = CurrentUser.getEmail().toString();
         final Uri enphotoUrl = CurrentUser.getPhotoUrl();
-        add = (Button) findViewById(R.id.pokemon_upload);
-        add.setOnClickListener(new View.OnClickListener(){
+        enroll = (Button) findViewById(R.id.pokemon_upload);
+        enroll.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
                 BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
                 EditText comment = (EditText) findViewById(R.id.pokemon_content);
                 String comment_str = comment.getText().toString();
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
                 pokemonPost newpokemon;
 
@@ -346,6 +380,7 @@ public class MainActivity extends AppCompatActivity
                 behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 mySpinner.setSelection(0);
                 comment.setText("");
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
         });
     }
