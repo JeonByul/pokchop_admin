@@ -2,6 +2,7 @@ package com.shine_star_11.abc;
 
 import android.Manifest;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,7 +25,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -45,14 +49,26 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.shine_star_11.abc.SignInActivity;
+import com.shine_star_11.abc.pokemonPost;
+
+import static android.view.View.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener, GoogleMap.OnMapClickListener {
@@ -79,6 +95,15 @@ public class MainActivity extends AppCompatActivity
     public static final String ANONYMOUS = "anonymous";
     private GoogleApiClient mGoogleApiClient;
 
+    // Firebase db instaces
+    private DatabaseReference mDatabase;
+    private Button enroll;
+
+    // pokemon list
+    String[] textArr = {"#001.Bulbasaur","#002.Ivysaur","#003.Venusaur","#004.Charmander","#005,Charmeleon","#006.Charizard",
+            "#007.Squirtle","#008.Wartortle","#009.Blastoise","#010.Caterpie","#011.Metapod","#012.Butterfree","#013.Weedle","#014.Kakuna",
+            "#015.Beedrill"};
+
     //img upload var
     private static int RESULT_LOAD_IMG = 1;
     String imgDecodableString;
@@ -87,8 +112,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         CurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         sMapFragment = SupportMapFragment.newInstance();
 
@@ -101,11 +126,6 @@ public class MainActivity extends AppCompatActivity
 
         BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-        // floatingactionbutton implementing on map
-
-        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        //fabButton.setOnClickListener(this);
 
         // google adMob adview implementing
 
@@ -168,10 +188,7 @@ public class MainActivity extends AppCompatActivity
                 mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
             }
         }
-
     }
-
-
 
     @Override
     public void onBackPressed() {
@@ -275,7 +292,6 @@ public class MainActivity extends AppCompatActivity
 
         // Add a marker in Sydney and move the camera
         LatLng sokcho = new LatLng(38.206983, 128.591848);
-        LatLng pusan = new LatLng(35.179773,129.075005);
         mMap.addMarker(new MarkerOptions().position(sokcho).title("여기는 속초마을~").snippet("놀러오세요~~"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sokcho));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(14));
@@ -286,11 +302,39 @@ public class MainActivity extends AppCompatActivity
             // Show rationale and request permission.
             Toast.makeText(getApplication(),"현재 위치를 확인할 수 없습니다.",Toast.LENGTH_SHORT).show();
         }
+        final Query pokemonlist = mDatabase.child("pokemonPosts");
 
+        pokemonlist.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                pokemonPost mapinfo = dataSnapshot.getValue(pokemonPost.class);
+                mMap.addMarker(new MarkerOptions().position(new LatLng(mapinfo.enlat,mapinfo.enlng)).title(textArr[(int) mapinfo.pokenumber]).snippet(mapinfo.comment));
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
-    public void onMapLongClick(LatLng point) {
+    public void onMapLongClick(final LatLng point) {
         //Toast.makeText(getApplication(),point.toString(),Toast.LENGTH_SHORT).show();
         if(marker != null)
             marker.remove();
@@ -305,26 +349,41 @@ public class MainActivity extends AppCompatActivity
         behavior.setHideable(true);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        String[] textArr = {"#001.Bulbasaur","#002.Ivysaur","#003.Venusaur","#004.Charmander","#005,Charmeleon","#006.Charizard",
-        "#007.Squirtle","#008.Wartortle","#009.Blastoise","#010.Caterpie","#011.Metapod","#012.Butterfree","#013.Weedle","#014.Kakuna",
-        "#015.Beedrill"};
-
-        Spinner mySpinner = (Spinner)findViewById(R.id.pokemon_name);
+        final Spinner mySpinner = (Spinner)findViewById(R.id.pokemon_name);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 R.layout.pokemon_dbrow, R.id.pokemon_dbname, textArr);
-        /*for(int i=0; i<2; i++){
-            ImageView imgView = (ImageView) findViewById(R.id.pokemon_icon);
-            // Set the Image in ImageView after decoding the String
-            imgView.setImageBitmap(BitmapFactory
-                    .decodeFile(imgDecodableString));
-        }*/
         mySpinner.setAdapter(adapter);
-    }
 
-    /*public void onClick(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-    }*/
+        // pokemon enrolling
+
+        final String enname = CurrentUser.getDisplayName().toString();
+        final String enemail = CurrentUser.getEmail().toString();
+        final Uri enphotoUrl = CurrentUser.getPhotoUrl();
+        enroll = (Button) findViewById(R.id.pokemon_upload);
+        enroll.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
+                BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
+                EditText comment = (EditText) findViewById(R.id.pokemon_content);
+                String comment_str = comment.getText().toString();
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                pokemonPost newpokemon;
+
+                if(enphotoUrl==null)
+                    newpokemon = new pokemonPost(comment_str, enemail, point.latitude, point.longitude, "", mySpinner.getSelectedItemPosition(), "", 3, enname, Calendar.getInstance().getTime().toString());
+                else
+                    newpokemon = new pokemonPost(comment_str, enemail, point.latitude, point.longitude, "", mySpinner.getSelectedItemPosition(), enphotoUrl.toString(), 3, enname, Calendar.getInstance().getTime().toString());
+
+                mDatabase.child("pokemonPosts").push().setValue(newpokemon);
+
+                behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                mySpinner.setSelection(0);
+                comment.setText("");
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        });
+    }
 
     @Override
     public void onMapClick(LatLng latLng) {
@@ -379,6 +438,7 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
                     .show();
         }
-
     }
+
+
 }
