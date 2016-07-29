@@ -4,7 +4,9 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import com.shine_star_11.abc.underComment;
 
 /**
  * Created by shine_star_11 on 7/29/16.
@@ -22,6 +24,7 @@ public class pokemonPost {
     public double type;
     public String username;
     public String created_at;
+    public List<underComment> under;
 
     public pokemonPost() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -56,6 +59,4 @@ public class pokemonPost {
 
         return result;
     }
-
-
 }
