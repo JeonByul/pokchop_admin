@@ -9,7 +9,7 @@
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_send"
-            android:title="포켓몬 잡으러 갈 사람~" />
+            android:title="포켓몬 소식" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@android:drawable/star_big_on"
@@ -17,7 +17,7 @@
         <item
             android:id="@+id/nav_manage"
             android:icon="@android:drawable/sym_action_chat"
-            android:title="자유게시판" />
+            android:title="자유게시판(유머)" />
     </group>
 
     <item android:title="나의 메뉴">

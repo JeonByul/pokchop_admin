@@ -33,22 +33,42 @@
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        app:behavior_peekHeight="232dp"
+        app:behavior_peekHeight="180dp"
         app:behavior_hideable="true"
-        app:layout_behavior="@string/bottom_sheet_behavior">
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        android:weightSum="1"
+        android:paddingTop="0dp">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="65dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:lines="1"
             android:maxLines="1"
             android:text="포켓몬 추가하기"
+            android:textSize="15dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp" />
-
+            android:layout_marginRight="16dp"
+            android:layout_weight="0.36"
+            android:textColor="#87cdff"
+            android:textIsSelectable="true"
+            android:paddingBottom="5dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#87cdff"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#87cdff"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="5dp"/>
         <!--
         <EditText
             android:id="@+id/pokemon_name"
@@ -75,6 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="60dp"
                 android:layout_toRightOf="@id/pokemon_name"
+                android:scaleType="centerCrop"
                 android:layout_weight="1"
                 android:background="#000"
                 android:layout_marginLeft="10dp" />
@@ -84,10 +105,11 @@
         <EditText
             android:id="@+id/pokemon_content"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="63dp"
             android:hint="글 입력(최대 20자)"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:layout_marginTop="-10dp"
             android:maxLength="20" />
 
         <LinearLayout
@@ -96,7 +118,7 @@
             android:layout_marginBottom="45dp"
             android:orientation="horizontal"
             android:layout_gravity="center_horizontal" >
-
+            <!--
             <Button
                 android:id="@+id/pokemon_picupload"
                 android:layout_width="wrap_content"
@@ -104,7 +126,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:onClick="loadImagefromGallery"
-                android:text="사진 추가" />
+                android:text="사진 추가" />-->
 
             <Button
                 android:id="@+id/pokemon_upload"
@@ -113,8 +135,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:onClick="enroll"
-                android:layout_toRightOf="@id/pokemon_picupload"
                 android:text="포켓몬 추가" />
+            <!--android:layout_toRightOf="@id/pokemon_picupload"-->
 
         </LinearLayout>
 
