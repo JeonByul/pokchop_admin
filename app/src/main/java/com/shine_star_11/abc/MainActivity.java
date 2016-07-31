@@ -84,6 +84,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.shine_star_11.abc.SignInActivity;
 import com.shine_star_11.abc.model.BackPressCloseHandler;
+import com.shine_star_11.abc.model.pokeStopGym;
 import com.shine_star_11.abc.model.postitem;
 import com.shine_star_11.abc.pokemonPost;
 import com.shine_star_11.abc.viewHolder.PostAdapter;
@@ -352,8 +353,10 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getApplication(), "현재 위치를 확인할 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
 
-        final Query pokemonlist = mDatabase.child("pokemonPosts");
+        final String[] stopgyminfo = {"포켓몬센터","체육관"};
 
+        final Query pokemonlist = mDatabase.child("pokemonPosts");
+        final Query stopgymlist = mDatabase.child("pokemon_StopGym");
         pokemonlist.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -365,22 +368,31 @@ public class MainActivity extends AppCompatActivity
                             .icon(BitmapDescriptorFactory.fromResource(0x7f030008 + Integer.valueOf(Integer.toHexString((int) mapinfo.pokenumber - 1), 16))));
                 }
             }
-
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+        stopgymlist.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                pokeStopGym admininfo = dataSnapshot.getValue(pokeStopGym.class);
+                mMap.addMarker(new MarkerOptions().position(new LatLng(admininfo.enlat, admininfo.enlng))
+                        .title(stopgyminfo[admininfo.type - 1])
+                        .icon(BitmapDescriptorFactory.fromResource(0x7f03009f + Integer.valueOf(Integer.toHexString(admininfo.type - 1), 16))));
             }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 
