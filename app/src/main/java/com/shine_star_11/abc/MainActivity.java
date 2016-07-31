@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -44,7 +45,10 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appinvite.AppInvite;
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -68,6 +72,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -77,8 +82,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.storage.UploadTask;
 import com.shine_star_11.abc.SignInActivity;
+import com.shine_star_11.abc.model.BackPressCloseHandler;
 import com.shine_star_11.abc.model.postitem;
 import com.shine_star_11.abc.pokemonPost;
 import com.shine_star_11.abc.viewHolder.PostAdapter;
@@ -86,7 +91,7 @@ import com.shine_star_11.abc.viewHolder.PostAdapter;
 import static android.view.View.*;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener, GoogleMap.OnMapClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnMapLongClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     SupportMapFragment sMapFragment;
     private GoogleMap mMap;
@@ -94,7 +99,8 @@ public class MainActivity extends AppCompatActivity
     private Marker marker;
     List<ClipData.Item> items;
 
-    FloatingActionButton fabButton;
+    // back press handler
+    private BackPressCloseHandler backPressCloseHandler;
 
     // Admob instance variables
     public AdRequest adRequest = new AdRequest.Builder().build();
@@ -109,11 +115,15 @@ public class MainActivity extends AppCompatActivity
     private String mPhotoUrl;
     public static final String ANONYMOUS = "anonymous";
     private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient client;
 
     // Firebase db instaces
     private DatabaseReference mDatabase;
     private Button enroll;
     private byte[] img_up;
+
+    // Firebase analytics
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     // pokemon list
     String[] textArr = {" 포켓몬 선택하기 ", " 1 이상해씨 Bulbasaur ", " 2 이상해풀 Ivysaur ", " 3 이상해꽃 Venusaur ", " 4 파이리 Charmander ", " 5 리자드 Charmeleon ", " 6 리자몽 Charizard ", " 7 꼬부기 Squirtle ", " 8 어니부기 Wartortle ", " 9 거북왕 Blastoise ", " 10 캐터피 Caterpie ", " 11 단데기 Metapod ", " 12 버터플 Butterfree ", " 13 뿔충이 Weedle ", " 14 딱충이 Kakuna ", " 15 독침붕 Beedrill ", " 16 구구 Pidgey ", " 17 피죤 Pidgeotto ", " 18 피죤투 Pidgeot ", " 19 꼬렛 Rattata ", " 20 레트라 Raticate ", " 21 깨비참 Spearow ", " 22 깨비드릴조 Fearow ", " 23 아보 Ekans ", " 24 아보크 Arbok ", " 25 피카츄 Pikachu ", " 26 라이츄 Raichu ", " 27 모래두지 Sandshrew ", " 28 고지 Sandslash ", " 29 니드런♀ Nidoran♀ ", " 30 니드리나 Nidorina ", " 31 니드퀸 Nidoqueen ", " 32 니드런♂ Nidoran♂ ", " 33 니드리노 Nidorino ", " 34 니드킹 Nidoking ", " 35 삐삐 Clefairy ", " 36 픽시 Clefable ", " 37 식스테일 Vulpix ", " 38 나인테일 Ninetales ", " 39 푸린 Jigglypuff ", " 40 푸크린 Wigglytuff ", " 41 주뱃 Zubat ", " 42 골뱃 Golbat ", " 43 뚜벅쵸 Oddish ", " 44 냄새꼬 Gloom ", " 45 라플레시아 Vileplume ", " 46 파라스 Paras ", " 47 파라섹트 Parasect ", " 48 콘팡 Venonat ", " 49 도나리 Venomoth ", " 50 디그다 Diglett ", " 51 닥트리오 Dugtrio ", " 52 나옹 Meowth ", " 53 페르시온 Persian ", " 54 고라파덕 Psyduck ", " 55 골덕 Golduck ", " 56 망키 Mankey ", " 57 성원숭 Primeape ", " 58 가디 Growlithe ", " 59 윈디 Arcanine ", " 60 발챙이 Poliwag ", " 61 슈륙챙이 Poliwhirl ", " 62 강챙이 Poliwrath ", " 63 캐이시 Abra ", " 64 윤겔라 Kadabra ", " 65 후딘 Alakazam ", " 66 알통몬 Machop ", " 67 근육몬 Machoke ", " 68 괴력몬 Machamp ", " 69 모다피 Bellsprout ", " 70 우츠동 Weepinbell ", " 71 우츠보트 Victreebel ", " 72 왕눈해 Tentacool ", " 73 독파리 Tentacruel ", " 74 꼬마돌 Geodude ", " 75 데구리 Graveler ", " 76 딱구리 Golem ", " 77 포니타 Ponyta ", " 78 날쌩마 Rapidash ", " 79 야돈 Slowpoke ", " 80 야도란 Slowbro ", " 81 코일 Magnemite ", " 82 레어코일 Magneton ", " 83 파오리 Farfetch’d ", " 84 두두 Doduo ", " 85 두트리오 Dodrio ", " 86 쥬쥬 Seel ", " 87 쥬레곤 Dewgong ", " 88 질퍽이 Grimer ", " 89 질뻐기 Muk ", " 90 셀러 Shellder ", " 91 파르셀 Cloyster ", " 92 고오스 Gastly ", " 93 고우스트 Haunter ", " 94 팬텀 Gengar ", " 95 롱스톤 Onix ", " 96 슬리프 Drowzee ", " 97 슬리퍼 Hypno ", " 98 크랩 Krabby ", " 99 킹크랩 Kingler ", " 100 찌리리공 Voltorb ", " 101 붐볼 Electrode ", " 102 아라리 Exeggcute ", " 103 나시 Exeggutor ", " 104 탕구리 Cubone ", " 105 텅구리 Marowak ", " 106 시라소몬 Hitmonlee ", " 107 홍수몬 Hitmonchan ", " 108 내루미 Lickitung ", " 109 또가스 Koffing ", " 110 또도가스 Weezing ", " 111 뿔카노 Rhyhorn ", " 112 코뿌리 Rhydon ", " 113 럭키 Chansey ", " 114 덩쿠리 Tangela ", " 115 캥카 Kangaskhan ", " 116 쏘드라 Horsea ", " 117 시드라 Seadra ", " 118 콘치 Goldeen ", " 119 왕콘치 Seaking ", " 120 별가사리 Staryu ", " 121 아쿠스타 Starmie ", " 122 마임맨 Mr. Mime ", " 123 스라크 Scyther ", " 124 루주라 Jynx ", " 125 에레브 Electabuzz ", " 126 마그마 Magmar ", " 127 쁘사이저 Pinsir ", " 128 켄타로스 Tauros ", " 129 잉어킹 Magikarp ", " 130 갸라도스 Gyarados ", " 131 라프라스 Lapras ", " 132 메타몽 Ditto ", " 133 이브이 Eevee ", " 134 샤미드 Vaporeon ", " 135 쥬피썬더 Jolteon ", " 136 부스터 Flareon ", " 137 폴리곤 Porygon ", " 138 암나이트 Omanyte ", " 139 암스타 Omastar ", " 140 투구 Kabuto ", " 141 투구푸스 Kabutops ", " 142 프테라 Aerodactyl ", " 143 잠만보 Snorlax ", " 144 프리져 Articuno ", " 145 썬더 Zapdos ", " 146 파이어 Moltres ", " 147 미뇽 Dratini ", " 148 신뇽 Dragonair ", " 149 망나뇽 Dragonite ", " 150 뮤츠 Mewtwo ", " 151 뮤 Mew "};
@@ -126,33 +136,29 @@ public class MainActivity extends AppCompatActivity
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
-
-    //postitem
-    ArrayList<postitem> listItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-9100766434021280~4396242656");
         CurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
         sMapFragment = SupportMapFragment.newInstance();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .addApi(AppInvite.API)
+                .build();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        listItem = new ArrayList<>();
-        RecyclerView rvList = (RecyclerView) findViewById(R.id.rv_list);
-
-        PostAdapter adapter = new PostAdapter(this, listItem);
-        rvList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        rvList.setAdapter(adapter);
-
         llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
-        //fabButton = (FloatingActionButton) findViewById(R.id.fab);
 
         BottomSheetBehavior behavior = BottomSheetBehavior.from(llBottomSheet);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -234,7 +240,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            backPressCloseHandler.onBackPressed();
         }
         mAdView.loadAd(adRequest);
     }
@@ -254,16 +260,20 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         switch (item.getItemId()) {
             case R.id.sign_out_menu:
                 mFirebaseAuth.signOut();
+                finish();
                 mUsername = ANONYMOUS;
                 startActivity(new Intent(this, SignInActivity.class));
                 return true;
+            /*case R.id.invite_menu:
+                sendInvitation();
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -301,14 +311,14 @@ public class MainActivity extends AppCompatActivity
             closing();
             fm.beginTransaction().replace(R.id.content_frame, new FreeBoard()).commit();
 
-        } else if (id == R.id.nav_manage) {
+        } /*else if (id == R.id.nav_manage) {
             closing();
 
-        } else if (id == R.id.nav_share) {
-
+        }
+        else if (id == R.id.nav_share) {
         } else if (id == R.id.nav_send) {
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -323,6 +333,7 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(getApplication(), "화면을 길게 눌러서 포켓몬을 추가해주세요~!", Toast.LENGTH_LONG).show();
 
         mMap = googleMap;
+        mAdView.loadAd(adRequest);
 
         // Map UI setting
         mMap.getUiSettings().setMapToolbarEnabled(false);
@@ -349,8 +360,6 @@ public class MainActivity extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 pokemonPost mapinfo = dataSnapshot.getValue(pokemonPost.class);
                 if (mapinfo.pokenumber != 0) {
-                    postitem item = new postitem(mapinfo.created_at,mapinfo.enlat, mapinfo.enlng, (int) mapinfo.pokenumber,mapinfo.username,mapinfo.profile_img,mapinfo.comment);
-                    listItem.add(item);
                     mMap.addMarker(new MarkerOptions().position(new LatLng(mapinfo.enlat, mapinfo.enlng))
                             .title(textArr[(int) mapinfo.pokenumber])
                             .snippet(mapinfo.comment + "  by." + mapinfo.username)
@@ -517,7 +526,35 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
                     .show();
         }
+
+        Log.d("analytics", "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Bundle payload = new Bundle();
+                payload.putString(FirebaseAnalytics.Param.VALUE, "sent");
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE,payload);
+                // Check how many invitations were sent and log.
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode,data);
+                Log.d("analytics", "Invitations sent: " + ids.length);
+            } else {
+                Bundle payload = new Bundle();
+                payload.putString(FirebaseAnalytics.Param.VALUE, "not sent");
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE,payload);
+                // Sending failed or it was canceled, show failure message to
+                // the user
+                Log.d("analytics", "Failed to send invitation.");
+            }
+        }
     }
+
+    /*private void sendInvitation() {
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                .setMessage(getString(R.string.invitation_message))
+                .setCallToActionText(getString(R.string.invitation_cta))
+                .build();
+        startActivityForResult(intent, REQUEST_INVITE);
+    }*/
 
     @Override
     public void onStart() {
@@ -557,5 +594,10 @@ public class MainActivity extends AppCompatActivity
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("ConnectionFailed", "onConnectionFailed:" + connectionResult);
     }
 }

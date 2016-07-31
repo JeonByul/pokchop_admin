@@ -5,21 +5,23 @@
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_dialog_map"
-            android:title="포키맵" />
+            android:title="포켓몬 서식지" />
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_send"
-            android:title="포켓몬 소식" />
+            android:title="최근에 잡은 포켓몬 소식" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@android:drawable/star_big_on"
-            android:title="포켓몬 Go 공략" />
+        android:id="@+id/nav_slideshow"
+        android:icon="@android:drawable/star_big_on"
+        android:title="내가 잡은 포켓몬" />
+
+    </group>
+        <!--
         <item
             android:id="@+id/nav_manage"
             android:icon="@android:drawable/sym_action_chat"
-            android:title="자유게시판(유머)" />
-    </group>
-
+            android:title="자유게시판(유머)" />-->
+<!--
     <item android:title="나의 메뉴">
         <menu>
             <item
@@ -31,6 +33,6 @@
                 android:icon="@android:drawable/stat_notify_chat"
                 android:title="내 글 목록" />
         </menu>
-    </item>
+    </item>-->
 
 </menu>
