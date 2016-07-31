@@ -314,11 +314,12 @@ public class MainActivity extends AppCompatActivity
         } /*else if (id == R.id.nav_manage) {
             closing();
 
-        }
-        else if (id == R.id.nav_share) {
-        } else if (id == R.id.nav_send) {
-
         }*/
+        else if (id == R.id.nav_share) {
+            Toast.makeText(getApplication(), "플레이 스토어에서 자세히 보기를 눌러주세요.", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_send) {
+            Toast.makeText(getApplication(), "플레이 스토어에서 댓글로 남겨주세요.", Toast.LENGTH_LONG).show();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

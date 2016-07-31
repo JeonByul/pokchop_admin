@@ -21,17 +21,16 @@
             android:id="@+id/nav_manage"
             android:icon="@android:drawable/sym_action_chat"
             android:title="자유게시판(유머)" />-->
-<!--
-    <item android:title="나의 메뉴">
+    <item android:title="추가 메뉴">
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="페이스북에 공유하기" />
+                android:icon="@android:drawable/ic_menu_agenda"
+                android:title="공지사항" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@android:drawable/stat_notify_chat"
-                android:title="내 글 목록" />
+                android:title="버그신고" />
         </menu>
     </item>-->
 
