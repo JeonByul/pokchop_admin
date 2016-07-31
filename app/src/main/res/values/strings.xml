@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">포켓몬 고 - Pokemap</string>
+    <string name="app_name">포켓몬 고 데이터센터</string>
+    <string name="app_bar_name">포켓몬 서식지</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -8,5 +9,5 @@
     <string name="sign_in">구글 계정으로 로그인</string>
     <string name="sign_out">로그아웃</string>
 
-    <string name="banner_ad_unit_id">ca-app-pub-9488666633576327/5185503697</string>
+    <string name="banner_ad_unit_id">ca-app-pub-9100766434021280/7349709052</string>
 </resources>

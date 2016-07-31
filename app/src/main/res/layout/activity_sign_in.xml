@@ -3,7 +3,7 @@
     android:id="@+id/sign_in_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/signin_back3">
+    android:background="@mipmap/signin_back5">
 
     <LinearLayout
         android:layout_width="match_parent"

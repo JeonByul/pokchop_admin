@@ -40,12 +40,16 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.shine_star_11.abc.model.BackPressCloseHandler;
 
 public class SignInActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
+
+    // back press handler
+    private BackPressCloseHandler backPressCloseHandler;
 
     private SignInButton mSignInButton;
 
@@ -58,9 +62,9 @@ public class SignInActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-
 
         // Assign fields
         mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
@@ -77,8 +81,6 @@ public class SignInActivity extends AppCompatActivity implements
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-        // Initialize FirebaseAuth
     }
 
     @Override
@@ -89,6 +91,11 @@ public class SignInActivity extends AppCompatActivity implements
                 break;
         }
     }
+
+    public void onBackPressed() {
+        backPressCloseHandler.onBackPressed();
+    }
+
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
