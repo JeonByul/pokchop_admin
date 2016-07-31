@@ -315,11 +315,12 @@ public class MainActivity extends AppCompatActivity
         } /*else if (id == R.id.nav_manage) {
             closing();
 
-        }
-        else if (id == R.id.nav_share) {
-        } else if (id == R.id.nav_send) {
-
         }*/
+        else if (id == R.id.nav_share) {
+            Toast.makeText(getApplication(), "플레이 스토어에서 자세히 보기를 눌러주세요.", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_send) {
+            Toast.makeText(getApplication(), "플레이 스토어에서 댓글로 남겨주세요.", Toast.LENGTH_LONG).show();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -330,7 +331,7 @@ public class MainActivity extends AppCompatActivity
     // Map listener functions
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(getApplication(), "PokeMap v1.0. JBJ Corp.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplication(), "PokeData v1.0. J&B Mobile", Toast.LENGTH_SHORT).show();
         Toast.makeText(getApplication(), "화면을 길게 눌러서 포켓몬을 추가해주세요~!", Toast.LENGTH_LONG).show();
 
         mMap = googleMap;
@@ -399,11 +400,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapLongClick(final LatLng point) {
+        Toast.makeText(getApplication(), "허위 입력시 계정이 차단될 수 있습니다.", Toast.LENGTH_SHORT).show();
         mAdView.loadAd(adRequest);
         if (marker != null)
             marker.remove();
 
-        marker = mMap.addMarker(new MarkerOptions().position(point).title("요기는~~").snippet("호쉐호쉐 출몰지역"));
+        marker = mMap.addMarker(new MarkerOptions().position(point).title("요기는~~").snippet("*** 출몰지역"));
         LatLng fix = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
         CameraPosition currentPlace = new CameraPosition.Builder().target(fix).zoom(mMap.getCameraPosition().zoom).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
