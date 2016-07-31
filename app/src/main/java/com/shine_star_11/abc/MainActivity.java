@@ -292,28 +292,26 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (sMapFragment.isAdded())
-            sFm.beginTransaction().hide(sMapFragment).commit();
+        if (!sMapFragment.isAdded())
+            sFm.beginTransaction().add(R.id.map, sMapFragment).commit();
 
 
         if (id == R.id.nav_gallery) {
-            if (!sMapFragment.isAdded())
-                sFm.beginTransaction().add(R.id.map, sMapFragment).commit();
-            else
-                sFm.beginTransaction().show(sMapFragment).commit();
+            sFm.beginTransaction().show(sMapFragment).commit();
 
         } else if (id == R.id.nav_camera) {
             closing();
+            sFm.beginTransaction().hide(sMapFragment).commit();
             fm.beginTransaction().replace(R.id.content_frame, new ImportFragment()).commit();
 
             // Handle the camera action
         } else if (id == R.id.nav_slideshow) {
             closing();
+            sFm.beginTransaction().hide(sMapFragment).commit();
             fm.beginTransaction().replace(R.id.content_frame, new FreeBoard()).commit();
 
         } /*else if (id == R.id.nav_manage) {
             closing();
-
         }*/
         else if (id == R.id.nav_share) {
             Toast.makeText(getApplication(), "플레이 스토어에서 자세히 보기를 눌러주세요.", Toast.LENGTH_LONG).show();

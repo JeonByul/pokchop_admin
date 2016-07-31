@@ -25,11 +25,11 @@
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@android:drawable/ic_menu_agenda"
+                android:icon="@android:drawable/stat_notify_chat"
                 android:title="공지사항" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@android:drawable/stat_notify_chat"
+                android:icon="@android:drawable/ic_dialog_alert"
                 android:title="버그신고" />
         </menu>
     </item>-->
