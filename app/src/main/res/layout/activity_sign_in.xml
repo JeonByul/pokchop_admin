@@ -19,7 +19,7 @@
             android:paddingRight="10dp"
             android:gravity="right"
             android:textColor="#fff"
-            android:text="JBJ Corp."/>
+            android:text="JnB Mobile."/>
 
 
     </LinearLayout>
